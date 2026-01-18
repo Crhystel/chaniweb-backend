@@ -119,6 +119,33 @@ consumer_thread = threading.Thread(target=start_queue_consumer, daemon=True)
 consumer_thread.start()
 print(" Consumidor de colas iniciado")
 
+@app.get("/health")
+def health_check():
+    """Health check endpoint for monitoring"""
+    try:
+        # Verificar conexión a Redis
+        redis_client.ping()
+        
+        # Verificar conexión a base de datos
+        db = database.SessionLocal()
+        db.execute("SELECT 1")
+        db.close()
+        
+        return {
+            "status": "healthy",
+            "timestamp": time.time(),
+            "services": {
+                "redis": "healthy",
+                "database": "healthy"
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "timestamp": time.time(),
+            "error": str(e)
+        }, 500
+
 @app.on_event("startup")
 def startup_event():
     print(" FastAPI iniciado")
