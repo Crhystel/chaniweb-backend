@@ -6,8 +6,8 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     price = Column(Float)
-    unit = Column(String) # kg, gr, lt, ml
+    unit = Column(String)
     quantity = Column(Float)
-    source = Column(String) # Supermaxi, Aki, etc
-    image_url = Column(String, nullable=True)
-    standard_price = Column(Float) # Precio por unidad estándar
+    source = Column(String)
+    image_url = Column(String, nullable=True) # HU-08
+    standard_price = Column(Float)

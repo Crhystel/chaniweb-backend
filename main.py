@@ -31,17 +31,12 @@ def calculate_std_price(price: float, quantity: float, unit: str):
         return (price / quantity) * 1000
     return price / quantity
 
-@app.get("/productos", response_model=List[schemas.Product])
+@app.get("/productos")
 def get_products(db: Session = Depends(database.get_db)):
-    # Intentar caché primero
-    cached = redis_client.get("productos_cache")
-    if cached:
-        return json.loads(cached)
-    
-    # Si no hay caché, consultar BD
+    # Forzar lectura directa de BD (sin caché)
     products = db.query(models.Product).all()
     
-    # Convertir a dict y cachear por 30 segundos
+    # Convertir a dict con cálculo de standard_price
     products_data = [
         {
             "id": p.id,
@@ -50,10 +45,10 @@ def get_products(db: Session = Depends(database.get_db)):
             "unit": p.unit,
             "quantity": p.quantity,
             "source": p.source,
-            "standard_price": p.standard_price
+            "image_url": p.image_url,
+            "standard_price": calculate_std_price(p.price, p.quantity, p.unit)
         } for p in products
     ]
-    redis_client.setex("productos_cache", 30, json.dumps(products_data))
     
     return products_data
 

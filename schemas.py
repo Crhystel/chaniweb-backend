@@ -7,6 +7,7 @@ class ProductBase(BaseModel):
     unit: str
     quantity: float
     source: str
+    image_url: Optional[str] = None
 
 class ProductCreate(ProductBase):
     pass
@@ -14,6 +15,5 @@ class ProductCreate(ProductBase):
 class Product(ProductBase):
     id: int
     standard_price: float
-
     class Config:
-        from_attributes = True 
+        from_attributes = True
