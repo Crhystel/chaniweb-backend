@@ -64,3 +64,13 @@ def health_check():
         return {"status": "healthy", "services": {"redis": "ok", "db": "ok"}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/ingest/")
+def ingest_product(product: schemas.ProductCreate):
+    try:
+        # Convertimos el objeto a JSON string y lo metemos a la cola de Redis
+        # Esto es lo que da "Tolerancia a fallos"
+        redis_client.lpush('products_queue', product.model_dump_json())
+        return {"status": "queued", "product": product.name}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en cola: {str(e)}")
