@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, UniqueConstraint
 from database import Base
 
 class Product(Base):
@@ -11,3 +11,4 @@ class Product(Base):
     source = Column(String)
     image_url = Column(String, nullable=True) # HU-08
     standard_price = Column(Float)
+    __table_args__ = (UniqueConstraint('name', 'source', name='_name_source_uc'),)
